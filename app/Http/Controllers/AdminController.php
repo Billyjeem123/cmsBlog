@@ -65,11 +65,11 @@ class AdminController extends Controller
 
             $input['password'] = bcrypt($request->password);
 
-             User::create($input);
+            User::create($input);
         }
 
 
-      return   redirect('/admin/users');
+        return   redirect('/admin/users');
     }
 
     /**
@@ -92,11 +92,11 @@ class AdminController extends Controller
     public function edit($id)
     {
         //
-       $userid =  User::find($id);
+        $userid =  User::find($id);
 
-       $role = Role::all();
+        $role = Role::all();
 
-        return view('admin.users.edit', ['user'=> $userid, 'role' => $role]);
+        return view('admin.users.edit', ['user' => $userid, 'role' => $role]);
     }
 
     /**
@@ -109,7 +109,25 @@ class AdminController extends Controller
     public function update(Request $request, $id)
     {
         //
-        return $request->all();
+        $input =  $request->all();
+
+        $userid = User::find($id);
+
+        $allFields = $request->all();
+
+        if ($file = $request->file('image')) {
+
+            $filename = time() . '.' . $file->getClientOriginalExtension(); //get filename
+
+            $file->move('images', $filename);
+
+            $input['image'] = $filename;
+        }
+
+        $userid->update($input);
+
+        return redirect('/admin/users');
+
     }
 
     /**
